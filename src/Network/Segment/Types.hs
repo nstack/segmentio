@@ -11,6 +11,8 @@ import Data.Char (isUpper, toLower)
 import Data.Text (Text)                   -- from: text
 import GHC.Generics (Generic)
 
+import Network.Segment.Defaults -- move to Internal
+
 customOptions :: AeTy.Options
 customOptions = defaultOptions { fieldLabelModifier = removePrefix, omitNothingFields = True }
   where removePrefix = lowerFirstChar . dropWhile (not . isUpper)
@@ -48,6 +50,9 @@ data Context
     _ctxUserAgent :: Maybe Text }
   deriving (Eq, Show, Generic)
 
+defaultContext :: Context
+defaultContext = gdef
+
 instance ToJSON Context where
   toJSON = genericToJSON customOptions
 
@@ -57,6 +62,9 @@ data App
     _appVersion :: Maybe Text,
     _appBuild :: Maybe Text }
   deriving (Eq, Show, Generic)
+
+defaultApp :: App
+defaultApp = gdef
 
 instance ToJSON App where
   toJSON = genericToJSON customOptions
@@ -69,6 +77,9 @@ data Campaign
     _cmpTerm    :: Maybe Text,
     _cmpContent :: Maybe Text }
   deriving (Eq, Show, Generic)
+
+defaultCampaign :: Campaign
+defaultCampaign = gdef
 
 instance ToJSON Campaign where
   toJSON = genericToJSON customOptions
@@ -83,6 +94,9 @@ data Device
     _devVersion      :: Maybe Text }
   deriving (Eq, Show, Generic)
 
+defaultDevice :: Device
+defaultDevice = gdef
+
 instance ToJSON Device where
   toJSON = genericToJSON customOptions
 
@@ -91,6 +105,9 @@ data Library
     _libName    :: Maybe Text,
     _libVersion :: Maybe Text }
   deriving (Eq, Show, Generic)
+
+defaultLibrary :: Library
+defaultLibrary = gdef
 
 instance ToJSON Library where
   toJSON = genericToJSON customOptions
@@ -105,6 +122,9 @@ data Location
     _locSpeed     :: Maybe Text }
   deriving (Eq, Show, Generic)
 
+defaultLocation :: Location
+defaultLocation = gdef
+
 instance ToJSON Location where
   toJSON = genericToJSON customOptions
 
@@ -115,6 +135,9 @@ data Network
     _netCellular  :: Maybe Undefined,
     _netWifi      :: Maybe Undefined }
   deriving (Eq, Show, Generic)
+
+defaultNetwork :: Network
+defaultNetwork = gdef
 
 instance ToJSON Network where
   toJSON = genericToJSON customOptions
@@ -128,6 +151,9 @@ data OS
 instance ToJSON OS where
   toJSON = genericToJSON customOptions
 
+defaultOS :: OS
+defaultOS = gdef
+
 data Page
   = Page {
     _pgeHash     :: Maybe Text,
@@ -137,6 +163,9 @@ data Page
     _pgeTitle    :: Maybe Text,
     _pgeUrl      :: Maybe Text }
   deriving (Eq, Show, Generic)
+
+defaultPage :: Page
+defaultPage = gdef
 
 instance ToJSON Page where
   toJSON = genericToJSON customOptions
@@ -149,6 +178,9 @@ data Referrer
     _refLink :: Maybe Text }
   deriving (Eq, Show, Generic)
 
+defaultReferrer :: Referrer
+defaultReferrer = gdef
+
 instance ToJSON Referrer where
   toJSON = genericToJSON customOptions
 
@@ -159,6 +191,9 @@ data Screen
     _scrWidth   :: Maybe Text } -- type?
   deriving (Eq, Show, Generic)
 
+defaultScreen :: Screen
+defaultScreen = gdef
+
 instance ToJSON Screen where
   toJSON = genericToJSON customOptions
 
@@ -167,6 +202,9 @@ data Traits = Traits Undefined
 
 instance ToJSON Traits where
   toJSON _ = Null
+
+defaultTraits :: Traits
+defaultTraits = undefined
 
 $(makeClassy ''App)
 $(makeClassy ''Campaign)
