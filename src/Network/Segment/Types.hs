@@ -1,9 +1,21 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE TemplateHaskell #-}
 module Network.Segment.Types where
-import Control.Lens hiding (Context)  -- from: lens
-import Data.Text (Text)               -- from: text
+import Control.Lens hiding (Context)      -- from: lens
+import Data.Aeson                         -- from: aeson
+import Data.Aeson.Types (
+  fieldLabelModifier,
+  omitNothingFields)                      -- from: aeson
+import qualified Data.Aeson.Types as AeTy -- from: aeson
+import Data.Char (isUpper, toLower)
+import Data.Text (Text)                   -- from: text
 import GHC.Generics (Generic)
+
+customOptions :: AeTy.Options
+customOptions = defaultOptions { fieldLabelModifier = removePrefix, omitNothingFields = True }
+  where removePrefix = lowerFirstChar . dropWhile (not . isUpper)
+        lowerFirstChar []     = []
+        lowerFirstChar (x:xs) = toLower x : xs
 
 data Undefined
 
@@ -12,6 +24,9 @@ instance Eq Undefined where
 
 instance Show Undefined where
   show _ = undefined
+
+instance ToJSON Undefined where
+  toJSON _ = undefined
 
 data Context
   = Context {
@@ -33,6 +48,9 @@ data Context
     _ctxUserAgent :: Maybe Text }
   deriving (Eq, Show, Generic)
 
+instance ToJSON Context where
+  toJSON = genericToJSON customOptions
+
 data App
   = App {
     _appName    :: Maybe Text,
@@ -40,6 +58,8 @@ data App
     _appBuild :: Maybe Text }
   deriving (Eq, Show, Generic)
 
+instance ToJSON App where
+  toJSON = genericToJSON customOptions
 
 data Campaign
   = Campaign {
@@ -48,7 +68,10 @@ data Campaign
     _cmpMedium  :: Maybe Text,
     _cmpTerm    :: Maybe Text,
     _cmpContent :: Maybe Text }
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
+
+instance ToJSON Campaign where
+  toJSON = genericToJSON customOptions
 
 data Device
   = Device {
@@ -58,13 +81,19 @@ data Device
     _devName         :: Maybe Text,
     _devType         :: Maybe Text,
     _devVersion      :: Maybe Text }
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
+
+instance ToJSON Device where
+  toJSON = genericToJSON customOptions
 
 data Library
   = Library {
     _libName    :: Maybe Text,
     _libVersion :: Maybe Text }
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
+
+instance ToJSON Library where
+  toJSON = genericToJSON customOptions
 
 data Location
   = Location {
@@ -74,7 +103,10 @@ data Location
     _locLongitude :: Maybe Text, -- more specific type?
     _locRegion    :: Maybe Text,
     _locSpeed     :: Maybe Text }
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
+
+instance ToJSON Location where
+  toJSON = genericToJSON customOptions
 
 data Network
   = Network {
@@ -82,13 +114,19 @@ data Network
     _netCarrier   :: Maybe Undefined,
     _netCellular  :: Maybe Undefined,
     _netWifi      :: Maybe Undefined }
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
+
+instance ToJSON Network where
+  toJSON = genericToJSON customOptions
 
 data OS
   = OS {
     _osName    :: Maybe Text,
     _osVersion :: Maybe Text }
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
+
+instance ToJSON OS where
+  toJSON = genericToJSON customOptions
 
 data Page
   = Page {
@@ -98,7 +136,10 @@ data Page
     _pgeSearch   :: Maybe Text,
     _pgeTitle    :: Maybe Text,
     _pgeUrl      :: Maybe Text }
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
+
+instance ToJSON Page where
+  toJSON = genericToJSON customOptions
 
 data Referrer
   = Referrer {
@@ -106,17 +147,26 @@ data Referrer
     _refName :: Maybe Text,
     _refUrl  :: Maybe Text,
     _refLink :: Maybe Text }
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
+
+instance ToJSON Referrer where
+  toJSON = genericToJSON customOptions
 
 data Screen
   = Screen {
     _scrDensity :: Maybe Text,
     _scrHeight  :: Maybe Text, -- type?
     _scrWidth   :: Maybe Text } -- type?
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
+
+instance ToJSON Screen where
+  toJSON = genericToJSON customOptions
 
 data Traits = Traits Undefined
   deriving (Eq, Show)
+
+instance ToJSON Traits where
+  toJSON _ = Null
 
 $(makeClassy ''App)
 $(makeClassy ''Campaign)
