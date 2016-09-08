@@ -2,9 +2,11 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 module Network.Segment.Types where
-import Control.Lens hiding (Context)      -- from: lens
+import Control.Lens hiding ((.=),
+                            Context)      -- from: lens
 import Data.Aeson                         -- from: aeson
 import Data.Bifunctor (Bifunctor(..))
 import Data.Text (Text)                   -- from: text
@@ -36,6 +38,10 @@ instance Bifunctor Identifier where
 
 class HasIdentifier m a b | m -> a b where
   identifier :: Lens' m (Identifier a b)
+
+identifierKV :: (ToJSON a, ToJSON b, KeyValue kv) => Identifier a b -> kv
+identifierKV (SessionID a) = "anonymousId" .= a
+identifierKV (UserID    b) = "userId"      .= b
 
 -- context datatypes
 
