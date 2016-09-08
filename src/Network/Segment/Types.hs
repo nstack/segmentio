@@ -3,21 +3,11 @@
 module Network.Segment.Types where
 import Control.Lens hiding (Context)      -- from: lens
 import Data.Aeson                         -- from: aeson
-import Data.Aeson.Types (
-  fieldLabelModifier,
-  omitNothingFields)                      -- from: aeson
-import qualified Data.Aeson.Types as AeTy -- from: aeson
-import Data.Char (isUpper, toLower)
 import Data.Text (Text)                   -- from: text
 import GHC.Generics (Generic)
 
+import Network.Segment.Internal.Aeson
 import Network.Segment.Internal.Defaults
-
-customOptions :: AeTy.Options
-customOptions = defaultOptions { fieldLabelModifier = removePrefix, omitNothingFields = True }
-  where removePrefix = lowerFirstChar . dropWhile (not . isUpper)
-        lowerFirstChar []     = []
-        lowerFirstChar (x:xs) = toLower x : xs
 
 data Undefined
 
