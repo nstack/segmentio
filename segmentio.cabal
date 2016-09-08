@@ -16,9 +16,8 @@ extra-source-files:  ChangeLog.md
 cabal-version:       >=1.10
 
 library
-  exposed-modules:     Network.Segment.Defaults
-                       Network.Segment.Types
-  -- other-modules:       
+  exposed-modules:     Network.Segment.Types
+  other-modules:       Network.Segment.Internal.Defaults
   -- other-extensions:    
   build-depends:       base >=4.8 && <4.10,
                        aeson >=0.11.2.1,

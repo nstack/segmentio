@@ -11,7 +11,7 @@ import Data.Char (isUpper, toLower)
 import Data.Text (Text)                   -- from: text
 import GHC.Generics (Generic)
 
-import Network.Segment.Defaults -- move to Internal
+import Network.Segment.Internal.Defaults
 
 customOptions :: AeTy.Options
 customOptions = defaultOptions { fieldLabelModifier = removePrefix, omitNothingFields = True }

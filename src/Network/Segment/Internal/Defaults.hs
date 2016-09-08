@@ -3,7 +3,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeOperators #-}
-module Network.Segment.Defaults (gdef) where
+module Network.Segment.Internal.Defaults (gdef) where
 import GHC.Generics
 
 class GPointed' f where
