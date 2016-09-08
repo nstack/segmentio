@@ -39,7 +39,7 @@ data Context
     _ctxApp       :: Maybe App,
     _ctxCampaign  :: Maybe Campaign,
     _ctxDevice    :: Maybe Device,
-    _ctxIP        :: Maybe Text, -- type
+    _ctxIp        :: Maybe Text, -- type
     _ctxLibrary   :: Maybe Library,
     _ctxLocale    :: Maybe Text,
     _ctxLocation  :: Maybe Location,
