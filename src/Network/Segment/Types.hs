@@ -1,8 +1,12 @@
+{-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TemplateHaskell #-}
 module Network.Segment.Types where
 import Control.Lens hiding (Context)      -- from: lens
 import Data.Aeson                         -- from: aeson
+import Data.Bifunctor (Bifunctor(..))
 import Data.Text (Text)                   -- from: text
 import GHC.Generics (Generic)
 
@@ -22,6 +26,18 @@ instance FromJSON Undefined where
 
 instance ToJSON Undefined where
   toJSON _ = undefined
+
+data Identifier a b = SessionID a | UserID b
+  deriving (Eq, Ord, Read, Show, Functor)
+
+instance Bifunctor Identifier where
+  bimap f _ (SessionID a) = SessionID $ f a
+  bimap _ g (UserID    a) = UserID    $ g a
+
+class HasIdentifier m a b | m -> a b where
+  identifier :: Lens' m (Identifier a b)
+
+-- context datatypes
 
 data Context
   = Context {
