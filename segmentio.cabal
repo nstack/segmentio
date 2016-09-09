@@ -16,7 +16,8 @@ extra-source-files:  ChangeLog.md
 cabal-version:       >=1.10
 
 library
-  exposed-modules:     Network.Segment.Types
+  exposed-modules:     Network.Segment
+                       Network.Segment.Types
                        Network.Segment.Context
   other-modules:       Network.Segment.Internal.Aeson
                        Network.Segment.Internal.Defaults
