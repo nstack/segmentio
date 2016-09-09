@@ -1,5 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Network.Segment where
+module Network.Segment (WriteKey,
+                        sendEvent,
+                        module Network.Segment.Reified,
+                        module Network.Segment.Types) where
 import Control.Lens                   -- from: lens
 import Data.Aeson (toJSON)            -- from: aeson
 import Data.Aeson.Lens                -- from: lens-aeson
