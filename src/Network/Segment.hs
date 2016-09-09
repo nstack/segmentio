@@ -8,6 +8,7 @@ import Data.Thyme.Time                -- from: thyme
 import Formatting                     -- from: formatting
 import qualified Network.Wreq as Wreq -- from: wreq
 
+import Network.Segment.Reified
 import Network.Segment.Types
 
 type WriteKey = Text
