@@ -1,235 +1,105 @@
-{-# LANGUAGE DeriveFunctor #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE GADTs #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TemplateHaskell #-}
-module Network.Segment.Types where
+{-# LANGUAGE RankNTypes #-}
+module Network.Segment.Types (EventType(..),
+                              eventType,
+                              Event(..),
+                              EventData(..),
+                              Identifier(..),
+                              payload,
+                              module Network.Segment.Context) where
 import Control.Lens hiding ((.=),
-                            Context)      -- from: lens
-import Data.Aeson                         -- from: aeson
-import Data.Bifunctor (Bifunctor(..))
-import Data.Text (Text)                   -- from: text
-import GHC.Generics (Generic)
+                            Context)          -- from: lens
+import Data.Aeson                             -- from: aeson
+import Data.HashMap.Lazy                      -- from: unordered-collections
+import Data.Text (Text, toLower)              -- from: text
+import Data.Thyme.Time                        -- from: thyme
+import Data.Thyme.Format.Aeson ()             -- from: thyme
 
-import Network.Segment.Internal.Aeson
-import Network.Segment.Internal.Defaults
+import Network.Segment.Context
 
-data Undefined
-
-instance Eq Undefined where
-  _ == _ = undefined
-
-instance Show Undefined where
-  show _ = undefined
-
-instance FromJSON Undefined where
-  parseJSON _ = undefined
-
-instance ToJSON Undefined where
-  toJSON _ = undefined
-
-data Identifier a b = SessionID a | UserID b
-  deriving (Eq, Ord, Read, Show, Functor)
-
-instance Bifunctor Identifier where
-  bimap f _ (SessionID a) = SessionID $ f a
-  bimap _ g (UserID    a) = UserID    $ g a
-
-class HasIdentifier m a b | m -> a b where
-  identifier :: Lens' m (Identifier a b)
-
-identifierKV :: (ToJSON a, ToJSON b, KeyValue kv) => Identifier a b -> kv
-identifierKV (SessionID a) = "anonymousId" .= a
-identifierKV (UserID    b) = "userId"      .= b
-
--- context datatypes
-
-data Context
-  = Context {
-    _ctxActive    :: Maybe Bool,
-    _ctxApp       :: Maybe App,
-    _ctxCampaign  :: Maybe Campaign,
-    _ctxDevice    :: Maybe Device,
-    _ctxIp        :: Maybe Text, -- type
-    _ctxLibrary   :: Maybe Library,
-    _ctxLocale    :: Maybe Text,
-    _ctxLocation  :: Maybe Location,
-    _ctxNetwork   :: Maybe Network,
-    _ctxOS        :: Maybe OS,
-    _ctxPage      :: Maybe Page,
-    _ctxReferrer  :: Maybe Referrer,
-    _ctxScreen    :: Maybe Screen,
-    _ctxTimezone  :: Maybe Text,
-    _ctxTraits    :: Maybe Traits,
-    _ctxUserAgent :: Maybe Text }
-  deriving (Eq, Show, Generic)
-
-defaultContext :: Context
-defaultContext = gdef
-
-instance FromJSON Context where parseJSON = genericParseJSON customOptions
-instance ToJSON   Context where toJSON = genericToJSON customOptions
-
-data App
-  = App {
-    _appName    :: Maybe Text,
-    _appVersion :: Maybe Text,
-    _appBuild :: Maybe Text }
-  deriving (Eq, Show, Generic)
-
-defaultApp :: App
-defaultApp = gdef
-
-instance FromJSON App where parseJSON = genericParseJSON customOptions
-instance ToJSON   App where toJSON = genericToJSON customOptions
-
-data Campaign
-  = Campaign {
-    _cmpName    :: Maybe Text,
-    _cmpSource  :: Maybe Text,
-    _cmpMedium  :: Maybe Text,
-    _cmpTerm    :: Maybe Text,
-    _cmpContent :: Maybe Text }
-  deriving (Eq, Show, Generic)
-
-defaultCampaign :: Campaign
-defaultCampaign = gdef
-
-instance FromJSON Campaign where parseJSON = genericParseJSON customOptions
-instance ToJSON   Campaign where toJSON = genericToJSON customOptions
-
-data Device
-  = Device {
-    _devId           :: Maybe Text,
-    _devManufacturer :: Maybe Text,
-    _devModel        :: Maybe Text,
-    _devName         :: Maybe Text,
-    _devType         :: Maybe Text,
-    _devVersion      :: Maybe Text }
-  deriving (Eq, Show, Generic)
-
-defaultDevice :: Device
-defaultDevice = gdef
-
-instance FromJSON Device where parseJSON = genericParseJSON customOptions
-instance ToJSON   Device where toJSON = genericToJSON customOptions
-
-data Library
-  = Library {
-    _libName    :: Maybe Text,
-    _libVersion :: Maybe Text }
-  deriving (Eq, Show, Generic)
-
-defaultLibrary :: Library
-defaultLibrary = gdef
-
-instance FromJSON Library where parseJSON = genericParseJSON customOptions
-instance ToJSON   Library where toJSON = genericToJSON customOptions
-
-data Location
-  = Location {
-    _locCity      :: Maybe Text,
-    _locCountry   :: Maybe Text,
-    _locLatitude  :: Maybe Text, -- more specific type?
-    _locLongitude :: Maybe Text, -- more specific type?
-    _locRegion    :: Maybe Text,
-    _locSpeed     :: Maybe Text }
-  deriving (Eq, Show, Generic)
-
-defaultLocation :: Location
-defaultLocation = gdef
-
-instance FromJSON Location where parseJSON = genericParseJSON customOptions
-instance ToJSON   Location where toJSON = genericToJSON customOptions
-
-data Network
-  = Network {
-    _netBluetooth :: Maybe Undefined,
-    _netCarrier   :: Maybe Undefined,
-    _netCellular  :: Maybe Undefined,
-    _netWifi      :: Maybe Undefined }
-  deriving (Eq, Show, Generic)
-
-defaultNetwork :: Network
-defaultNetwork = gdef
-
-instance FromJSON Network where parseJSON = genericParseJSON customOptions
-instance ToJSON   Network where toJSON = genericToJSON customOptions
-
-data OS
-  = OS {
-    _osName    :: Maybe Text,
-    _osVersion :: Maybe Text }
-  deriving (Eq, Show, Generic)
-
-instance FromJSON OS where parseJSON = genericParseJSON customOptions
-instance ToJSON   OS where toJSON = genericToJSON customOptions
-
-defaultOS :: OS
-defaultOS = gdef
-
-data Page
-  = Page {
-    _pgeHash     :: Maybe Text,
-    _pgePath     :: Maybe Text,
-    _pgeReferrer :: Maybe Referrer, -- is this the referrer object?
-    _pgeSearch   :: Maybe Text,
-    _pgeTitle    :: Maybe Text,
-    _pgeUrl      :: Maybe Text }
-  deriving (Eq, Show, Generic)
-
-defaultPage :: Page
-defaultPage = gdef
-
-instance FromJSON Page where parseJSON = genericParseJSON customOptions
-instance ToJSON   Page where toJSON = genericToJSON customOptions
-
-data Referrer
-  = Referrer {
-    _refType :: Maybe Text,
-    _refName :: Maybe Text,
-    _refUrl  :: Maybe Text,
-    _refLink :: Maybe Text }
-  deriving (Eq, Show, Generic)
-
-defaultReferrer :: Referrer
-defaultReferrer = gdef
-
-instance FromJSON Referrer where parseJSON = genericParseJSON customOptions
-instance ToJSON   Referrer where toJSON = genericToJSON customOptions
-
-data Screen
-  = Screen {
-    _scrDensity :: Maybe Text,
-    _scrHeight  :: Maybe Text, -- type?
-    _scrWidth   :: Maybe Text } -- type?
-  deriving (Eq, Show, Generic)
-
-defaultScreen :: Screen
-defaultScreen = gdef
-
-instance FromJSON Screen where parseJSON = genericParseJSON customOptions
-instance ToJSON   Screen where toJSON = genericToJSON customOptions
-
-data Traits = Traits Undefined
+data EventType = Track
   deriving (Eq, Show)
 
-instance FromJSON Traits where parseJSON _ = undefined
-instance ToJSON   Traits where toJSON _ = Null
+data Event where
+  Event :: (HasCommonFields a, HasProperties a) => EventType -> Text -> a -> Event
 
-defaultTraits :: Traits
-defaultTraits = undefined
+eventType :: Prism' Text EventType
+eventType = prism' toT $ fromT . toLower
+  where toT   Track   = "track"
+        fromT "track" = Just Track
+        fromT _       = Nothing
 
-$(makeClassy ''App)
-$(makeClassy ''Campaign)
-$(makeClassy ''Device)
-$(makeClassy ''Library)
-$(makeClassy ''Location)
-$(makeClassy ''Network)
-$(makeClassy ''OS)
-$(makeClassy ''Page)
-$(makeClassy ''Referrer)
-$(makeClassy ''Screen)
--- $(makeClassy ''Traits)
-$(makeClassy ''Context)
+optionalGetter :: Contravariant f => ((Maybe a) -> f (Maybe a)) -> s -> f s
+optionalGetter f s = let g _ = Nothing in contramap g $ f (g s)
+
+data Identifier = SessionID Text | UserID Text
+  deriving (Eq, Show)
+
+class HasProperties m where
+  properties :: Getter m (HashMap Text Value)
+
+data EventData
+  = EventData {
+    _identifier :: Identifier,
+    _messageId  :: Maybe Text,
+    _context    :: Context,
+    _timestamp  :: Maybe UTCTime }
+  deriving (Eq, Show)
+
+data TrackData
+  = TrackData {
+    _commonFields :: EventData,
+    _properties   :: HashMap Text Value }
+  deriving (Eq, Show)
+
+instance HasContext EventData where
+  context f s = (\r -> s { _context = r }) <$> f (_context s)
+
+instance HasContext TrackData where
+  context f (TrackData c p) = (\r -> TrackData c { _context = r } p) <$> f (_context c)
+
+instance HasCommonFields EventData where
+  identifier f s = (\r -> s { _identifier = r }) <$> f (_identifier s)
+  messageId  f s = (\r -> s { _messageId  = r }) <$> f (_messageId  s)
+  timestamp  f s = (\r -> s { _timestamp  = r }) <$> f (_timestamp  s)
+
+instance HasCommonFields TrackData where
+  identifier f (TrackData c s) = (\r -> TrackData c { _identifier = r } s) <$> f (_identifier c)
+  messageId  f (TrackData c s) = (\r -> TrackData c { _messageId  = r } s) <$> f (_messageId  c)
+  timestamp  f (TrackData c s) = (\r -> TrackData c { _timestamp  = r } s) <$> f (_timestamp  c)
+
+class HasContext m => HasCommonFields m where
+  {-# MINIMAL identifier #-}
+  identifier :: Getter m Identifier
+  messageId :: Getter m (Maybe Text)
+  messageId = optionalGetter
+  timestamp :: Getter m (Maybe UTCTime)
+  timestamp = optionalGetter
+
+identifierKV :: KeyValue kv => Identifier -> kv
+identifierKV (SessionID a) = "anonymousId" .= toJSON a
+identifierKV (UserID    b) = "userId"      .= toJSON b
+
+commonPayload :: (HasCommonFields v, KeyValue kv) => EventType -> v -> [kv] -> [kv]
+commonPayload et v r = "type" .= (et ^. re eventType) : -- is this one actually needed?
+                       identifierKV (v ^. identifier) :
+                       "context" .= (v ^. context) :
+                       "messageId" .=? (v ^. messageId) ?:
+                       "timestamp" .=? (v ^. timestamp) ?: r
+
+eventPayload :: KeyValue kv => Event -> [kv] -> [kv]
+eventPayload (Event Track nm v) r = "properties" .= (v ^. properties) :
+                                    "event" .= nm : r
+
+payload :: Event -> Value
+payload ev@(Event et _ v) = object (commonPayload et v . eventPayload ev $ [])
+
+infixr 5 ?:
+(?:) :: Maybe a -> [a] -> [a]
+Just a  ?: r = a : r
+Nothing ?: r = r
+
+infixr 8 .=?
+(.=?) :: (ToJSON v, KeyValue kv) => Text -> Maybe v -> Maybe kv
+t .=? v = (t .=) <$> v
