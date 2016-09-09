@@ -5,6 +5,8 @@ module Network.Segment.Types (EventType(..),
                               eventType,
                               Event(..),
                               EventData(..),
+                              HasCommonFields(..),
+                              HasProperties(..),
                               Identifier(..),
                               payload,
                               module Network.Segment.Context) where
