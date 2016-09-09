@@ -17,6 +17,7 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:     Network.Segment
+                       Network.Segment.Reified
                        Network.Segment.Types
                        Network.Segment.Context
   other-modules:       Network.Segment.Internal.Aeson
