@@ -69,6 +69,9 @@ instance HasCommonFields TrackData where
   messageId  f (TrackData c s) = (\r -> TrackData c { _messageId  = r } s) <$> f (_messageId  c)
   timestamp  f (TrackData c s) = (\r -> TrackData c { _timestamp  = r } s) <$> f (_timestamp  c)
 
+instance HasProperties TrackData where
+  properties f s = (\r -> s { _properties = r }) <$> f (_properties s)
+
 class HasContext m => HasCommonFields m where
   {-# MINIMAL identifier #-}
   identifier :: Getter m Identifier
