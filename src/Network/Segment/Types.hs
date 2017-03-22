@@ -16,7 +16,7 @@ import Control.Lens hiding ((.=),
 import Control.Monad.State                    -- from: mtl
 import Data.Aeson                             -- from: aeson
 import Data.HashMap.Lazy                      -- from: unordered-collections
-import Data.Text (Text, toLower)              -- from: text
+import Data.Text (Text)                       -- from: text
 import Data.Thyme.Time                        -- from: thyme
 import Data.Thyme.Format.Aeson ()             -- from: thyme
 

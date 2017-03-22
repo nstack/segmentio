@@ -8,7 +8,6 @@ import Data.Aeson (toJSON)            -- from: aeson
 import Data.Aeson.Lens                -- from: lens-aeson
 import Data.Text (Text, unpack)       -- from: text
 import Data.Text.Strict.Lens          -- from: lens
-import Data.Thyme.Time                -- from: thyme
 import Formatting                     -- from: formatting
 import qualified Network.Wreq as Wreq -- from: wreq
 
