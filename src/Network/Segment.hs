@@ -21,8 +21,8 @@ apiEndpoint :: Format r (Text -> r)
 apiEndpoint = "https://api.segment.io/v1/" % stext
 
 sendEvent :: WriteKey -> Event -> IO Bool
-sendEvent wkey ev@(Event evt _ _) = do
-  let url  = unpack . sformat apiEndpoint $ evt ^. re eventType
+sendEvent wkey ev = do
+  let url  = unpack . sformat apiEndpoint $ ev ^. eventType . eventTypeText
       opts = Wreq.defaults & Wreq.auth ?~ Wreq.basicAuth (wkey ^. re utf8) ""
   resp <- Wreq.postWith opts url (toJSON $ payload ev)
   -- the docs say they _always_ return 200

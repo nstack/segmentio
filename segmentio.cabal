@@ -24,7 +24,7 @@ library
                        Network.Segment.Internal.Defaults
   -- other-extensions:    
   build-depends:       base >=4.8 && <4.10,
-                       aeson >=0.11.2.1,
+                       aeson >= 1.0,
                        bytestring >=0.10.6.0,
                        constraints >=0.8,
                        containers >=0.5.6.2,

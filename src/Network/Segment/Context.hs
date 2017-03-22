@@ -5,6 +5,8 @@ import Control.Lens hiding ((.=),
                             Context)      -- from: lens
 import Data.Aeson                         -- from: aeson
 import Data.Text (Text)                   -- from: text
+import Data.Thyme.Time (UTCTime)          -- from: thyme
+import Data.Thyme.Format.Aeson ()         -- from: thyme
 import GHC.Generics (Generic)
 
 import Network.Segment.Internal.Aeson
@@ -191,24 +193,53 @@ defaultScreen = gdef
 instance FromJSON Screen where parseJSON = genericParseJSON customOptions
 instance ToJSON   Screen where toJSON = genericToJSON customOptions
 
-data Traits = Traits Undefined
-  deriving (Eq, Show)
+data Traits
+  = Traits {
+    _trtAddress     :: Maybe Address,
+    _trtAge         :: Maybe Int,
+    _trtAvatar      :: Maybe Text, -- url
+    _trtBirthday    :: Maybe UTCTime, -- type?
+    _trtCreatedAt   :: Maybe UTCTime, -- type?
+    _trtDescription :: Maybe Text,
+    _trtEmail       :: Maybe Text,
+    _trtFirstName   :: Maybe Text,
+    _trtName        :: Maybe Text, -- auto-filled from firstName lastName
+    _trtPhone       :: Maybe Text,
+    _trtTitle       :: Maybe Text, -- job title, not mr/mrs/etc
+    _trtUsername    :: Maybe Text,
+    _trtWebsite     :: Maybe Text
+           }
+  deriving (Eq, Show, Generic)
 
-instance FromJSON Traits where parseJSON _ = undefined
-instance ToJSON   Traits where toJSON _ = Null
+instance FromJSON Traits where parseJSON = genericParseJSON customOptions
+instance ToJSON   Traits where toJSON = genericToJSON customOptions
+
+data Address
+  = Address {
+    _addrStreet     :: Maybe Text,
+    _addrCity       :: Maybe Text,
+    _addrState      :: Maybe Text,
+    _addrPostalCode :: Maybe Text,
+    _addrCountry    :: Maybe Text
+            }
+  deriving (Eq, Show, Generic)
+
+instance FromJSON Address where parseJSON = genericParseJSON customOptions
+instance ToJSON   Address where toJSON = genericToJSON customOptions
 
 defaultTraits :: Traits
-defaultTraits = undefined
+defaultTraits = gdef
 
-$(makeClassy ''App)
-$(makeClassy ''Campaign)
-$(makeClassy ''Device)
-$(makeClassy ''Library)
-$(makeClassy ''Location)
-$(makeClassy ''Network)
-$(makeClassy ''OS)
-$(makeClassy ''Page)
-$(makeClassy ''Referrer)
-$(makeClassy ''Screen)
--- $(makeClassy ''Traits)
-$(makeClassy ''Context)
+makeClassy ''App
+makeClassy ''Campaign
+makeClassy ''Device
+makeClassy ''Library
+makeClassy ''Location
+makeClassy ''Network
+makeClassy ''OS
+makeClassy ''Page
+makeClassy ''Referrer
+makeClassy ''Screen
+makeClassy ''Traits
+-- makeClassy ''Address  -- conflict
+makeClassy ''Context
