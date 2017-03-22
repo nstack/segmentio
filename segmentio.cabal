@@ -28,7 +28,6 @@ library
                        bytestring >=0.10.6.0,
                        constraints >=0.8,
                        containers >=0.5.6.2,
-                       formatting >=6.2.2,
                        lens >=4.13,
                        lens-aeson >=1.0.0.5,
                        mtl >=2.2.1,

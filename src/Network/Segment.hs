@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Network.Segment (WriteKey,
                         sendEvent,
+                        module Network.Segment.Context,
                         module Network.Segment.Reified,
                         module Network.Segment.Types) where
 import Control.Lens                   -- from: lens
@@ -11,6 +12,7 @@ import Data.Text (Text, unpack)       -- from: text
 import Data.Text.Strict.Lens          -- from: lens
 import qualified Network.Wreq as Wreq -- from: wreq
 
+import Network.Segment.Context
 import Network.Segment.Reified
 import Network.Segment.Types
 
