@@ -1,3 +1,4 @@
+{-# OPTIONS_HADDOCK prune #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE TemplateHaskell #-}
 module Network.Segment.Context where
