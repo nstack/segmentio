@@ -23,7 +23,7 @@ library
   other-modules:       Network.Segment.Internal.Aeson
                        Network.Segment.Internal.Defaults
   -- other-extensions:    
-  build-depends:       base >=4.8 && <4.10,
+  build-depends:       base >=4.8 && <4.11,
                        aeson >= 1.0,
                        bytestring >=0.10.6.0,
                        constraints >=0.8,
